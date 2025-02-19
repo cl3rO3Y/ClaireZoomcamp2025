@@ -8,14 +8,14 @@ terraform {
 }
 
 provider "google" {
-  project     = "pacific-ethos-448615-i4"
-  region      = "fr-central"
-  credentials = "./keys/my-creds.json"
+  project     = var.project
+  region      = var.region
+  credentials = file(var.credentials)
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "pacific-ethos-448615-i4-terra-bucket"
-  location      = "EU"
+  name          = var.gcs_bucket_name
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -36,3 +36,15 @@ resource "google_storage_bucket" "demo-bucket" {
     }
   }
 }
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id                  = var.bq_dataset_name
+  friendly_name               = var.bq_dataset_name
+  location                    = var.location
+  default_table_expiration_ms = 3600000
+
+  labels = {
+    env = "default"
+  }
+}
+
